@@ -241,12 +241,12 @@ const DAY_START = 7 * 60, DAY_END = 21 * 60; // タイムライン範囲（分�
 
 /* 部屋定義（表示順：7F→6F→5F、未指定は最後に7F→5F） */
 const ROOMS = [
-{ id:"west", name:"Sky 7 West", floor:"7F", meta:"20名", cal:"f7", tag:""},
-{ id:"east", name:"Sky 7 East", floor:"7F", meta:"15名", cal:"f7", tag:""},
+{ id:"west", name:"Sky 7 West", floor:"7F", meta:"20名", cal:"f7", tag:"\u3010West\u3011"},
+{ id:"east", name:"Sky 7 East", floor:"7F", meta:"15名", cal:"f7", tag:"\u3010East\u3011"},
 { id:"c6", name:"BlessYou College 6F", floor:"6F", meta:"大研修室", cal:"f6", tag:null},
-{ id:"conf", name:"Conference Room", floor:"5F", meta:"", cal:"f5", tag:""},
-{ id:"alpaca", name:"Alpaca", floor:"5F", meta:"", cal:"f5", tag:""},
-{ id:"terrace", name:"Terrace", floor:"5F", meta:"窓際・1対1用", cal:"f5", tag:""},
+{ id:"conf", name:"Conference Room", floor:"5F", meta:"", cal:"f5", tag:"\u3010Conf\u3011"},
+{ id:"alpaca", name:"Alpaca", floor:"5F", meta:"", cal:"f5", tag:"\u3010Alpaca\u3011"},
+{ id:"terrace", name:"Terrace", floor:"5F", meta:"窓際・1対1用", cal:"f5", tag:"\u3010Terrace\u3011"},
 { id:"none7", name:"7F 未指定", floor:"7F", meta:"印のない予約", cal:"f7", tag:"__none__"},
 { id:"none5", name:"5F 未指定", floor:"5F", meta:"印のない予約", cal:"f5", tag:"__none__"}
 ];
@@ -257,11 +257,11 @@ const bookableRooms = () => ROOMS.filter(r =>!isNoneRoom(r));
 /* 印の判定パターン（評価順：West→East→Conf→Alpaca→Terrace）
 括弧付きを最優先し、次に単独表記を判定する */
 const TAG_PATTERNS = [
-{ room:"west", bracket:["",""], plain:["West","ウエスト"]},
-{ room:"east", bracket:["",""], plain:["East","イースト"]},
-{ room:"conf", bracket:["",""], plain:["Conf","会議室"]},
-{ room:"alpaca", bracket:[""], plain:["Alpaca","アルパカ"]},
-{ room:"terrace", bracket:[""], plain:["Terrace","テラス"]}
+{ room:"west", bracket:["\u3010West\u3011","\u3010\u897f\u3011"], plain:["West","ウエスト"]},
+{ room:"east", bracket:["\u3010East\u3011","\u3010\u6771\u3011"], plain:["East","イースト"]},
+{ room:"conf", bracket:["\u3010Conf\u3011","\u3010\u4f1a\u8b70\u5ba4\u3011"], plain:["Conf","会議室"]},
+{ room:"alpaca", bracket:["\u3010Alpaca\u3011"], plain:["Alpaca","アルパカ"]},
+{ room:"terrace", bracket:["\u3010Terrace\u3011"], plain:["Terrace","テラス"]}
 ];
 function matchTag(title){
 for (const p of TAG_PATTERNS)
@@ -279,7 +279,7 @@ return null;
 function routeRoom(calKey, title){
 if (calKey === "f6") return "c6";
 const m = matchTag(title || "");
-if (m) return m.room;
+if (m){ const r = roomById(m.room); if (r && r.cal === calKey) return m.room; }
 return calKey === "f7"? "none7": "none5";
 }
 /* 表示用タイトル（印を取り除く） */
